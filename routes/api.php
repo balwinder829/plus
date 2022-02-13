@@ -20,9 +20,6 @@ use App\Http\Controllers\ProductController;
 
 Route::post('login', [PlusUserController::class, 'authenticate']);
 Route::post('register', [PlusUserController::class, 'register']);
-Route::get('test',function(){
-    echo "hii";
-});
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('logout', [PlusUserController::class, 'logout']);
     Route::get('get_user', [PlusUserController::class, 'get_user']);
