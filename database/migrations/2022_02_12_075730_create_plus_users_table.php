@@ -25,7 +25,7 @@ class CreatePlusUsersTable extends Migration
             $table->timestamp('lastupdate')->nullable();
             $table->integer('status')->nullable();
             $table->integer('taxon_status')->nullable();
-            $table->string('password');
+            //$table->string('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

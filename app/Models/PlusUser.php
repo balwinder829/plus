@@ -28,7 +28,7 @@ class PlusUser extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'smscode'
     ];
 
     /**
@@ -52,4 +52,36 @@ class PlusUser extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Product::class);
     }
+
+    public function getUserByOTP($otp){
+       return  PlusUser::where("smscode", $otp)->first();
+    }
+
+    public function getUserByEmail($email){
+        return  PlusUser::where("email", $email)->first();
+    }
+
+    public function getUserById($id){
+        return  PlusUser::where("id", $id)->first();
+    }
+
+    public function getUserByPhone($phone){
+        return  PlusUser::where("mobile", $phone)->first();
+    }
+
+    public function insertNewOtp($id, $otp, $newDateTime){
+
+        $data = array('smscode' => $otp, 'smsCodeExpriration' => $newDateTime);
+        return PlusUser::where( 'id', $id )
+                    ->limit(1)
+                    ->update($data);
+    }
+
+    public function updateUser($id, $data){
+
+        return PlusUser::where( 'id', $id )
+                    ->limit(1)
+                    ->update($data);
+    }
+
 }
