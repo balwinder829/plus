@@ -10,3 +10,17 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/.history
+database/.gitignore
+README_BACKUP_317.md
+README_LOCAL_317.md
+README_BASE_317.md
+README_REMOTE_317.md
+zipExtract.php
+database/.gitignore
+app.zip
+.README_BASE_317.md.swp
+.README_REMOTE_317.md.swp
+.README_LOCAL_317.md.swp
+.README.md.swp
+.gitignore

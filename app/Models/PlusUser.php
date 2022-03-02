@@ -13,6 +13,9 @@ class PlusUser extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     protected $guarded = ['id'];
+
+    protected $table = "plus_users";
+
     /**
      * The attributes that are mass assignable.
      *
@@ -58,7 +61,7 @@ class PlusUser extends Authenticatable implements JWTSubject
     }
 
     public function getUserByEmail($email){
-        return  PlusUser::where("email", $email)->first();
+        return PlusUser::where("email", $email)->first();
     }
 
     public function getUserById($id){

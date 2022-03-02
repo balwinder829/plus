@@ -29,7 +29,7 @@ class PlusUserController extends BaseController
         $validator = Validator::make($data, [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email'     => 'required|email|unique:users',
+            'email'     => 'required|email',
             'mobile'    => 'required|numeric'
         ]);
 
@@ -56,7 +56,7 @@ class PlusUserController extends BaseController
             return $this->sendError(__("messages.user.phone_already_exists", ["phone" => $mobile]));
         }
 
-        $otp = rand(100,100000);
+        $otp = substr(rand(100999,1000099990), 0, 5);
         $newDateTime = Carbon::now()->addMinutes(4);
         $user = PlusUser::create([
             'full_name' => $fullname,
@@ -124,13 +124,13 @@ class PlusUserController extends BaseController
         }
 
         extract($request->all());
-        $otp = rand(100,100000);
+        $otp = substr(rand(100999,1000099990), 0, 5);
         $newDateTime = Carbon::now()->addMinutes(4);
 
         $isEmailExists = $this->PlusUserMod->getUserByEmail($email);
 
         if(empty($isEmailExists)){
-            return $this->sendError(__("messages.user.user_not_found", ["email" => $email]));
+            return $this->sendError($isEmailExists, __("messages.user.user_not_found", ["email" => $email]));
         }
 
         $res = $this->PlusUserMod->insertNewOtp($isEmailExists->id, $otp, $newDateTime);
@@ -223,7 +223,7 @@ class PlusUserController extends BaseController
         }
 
         extract($request->all());
-        $user = $this->getCurrentUser();;
+        $user = $this->getCurrentUser();
 
         if(!empty($user->id)){
 

@@ -1,2 +1,4 @@
 *.sqlite
 *.sqlite-journal
+.gitignore
+README_REMOTE_317.md

@@ -24,8 +24,11 @@ return [
             'phone_already_exists' => ':phone already exists, Please try with another phone',
             'otp_email_sent' => 'OTP successfully sent on :email email',
             'set_rooms' => 'Set rooms :rooms successfully',
-            'not_set_rooms' => 'Rooms not successfully set please try again'
+            'not_set_rooms' => 'Rooms not successfully set please try again',
         ], 
+        'invoice' => [
+            "invoice_inserted" => "Invoice inserted successfully"
+        ],
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
 ];

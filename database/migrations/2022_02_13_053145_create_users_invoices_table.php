@@ -19,6 +19,7 @@ class CreateUsersInvoicesTable extends Migration
             $table->integer('foryear_id');
             $table->integer('invoice_type_id');
             $table->integer('paid');
+            $table->string('file_link');
             $table->timestamp('start_date');
             $table->timestamp('end_date');
             $table->integer('credit');

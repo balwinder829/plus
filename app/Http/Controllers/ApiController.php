@@ -17,7 +17,7 @@ class ApiController extends Controller
         $data = $request->only('full_name', 'email', 'mobile','smscode','smsCodeExpriration','insetTime','lastupdate','status','taxon_status','password');
         $validator = Validator::make($data, [
             'full_name' => 'required|string',
-            'email'     => 'required|email|unique:users',
+            'email'     => 'required|email|unique:plus_users',
             'mobile'    => 'required|numeric',
             'password'  => 'required|string|min:6|max:50'
         ]);
