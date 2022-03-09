@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Traits\UsersTrait;
+use Illuminate\Support\Facades\DB;
 
 class PlusUserController extends BaseController
 {
@@ -24,13 +25,17 @@ class PlusUserController extends BaseController
 
     public function register(Request $request)
     {
-        //Validate data
+        ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+        //Validate data      
         $data = $request->only('first_name', 'last_name', 'email', 'mobile','smscode','smsCodeExpriration','insetTime','lastupdate','status','taxon_status','password');
         $validator = Validator::make($data, [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email'     => 'required|email',
-            'mobile'    => 'required|numeric'
+            'mobile'    => 'required'
         ]);
 
         //Send failed response if request is not valid
@@ -47,17 +52,26 @@ class PlusUserController extends BaseController
         /** If email already exists in database return error message */
         $isEmailAlreadyExists = $this->PlusUserMod->getUserByEmail($email);
         if(!empty($isEmailAlreadyExists)){
-            return $this->sendError(__("messages.user.email_already_registerd", ["email" => $email]));
+           // return $this->sendError(__("messages.user.email_already_registerd", ["email" => $email]));
         }
 
         /** If phone already exists in database return error message */ 
         $getUserByPhone = $this->PlusUserMod->getUserByPhone($mobile);
         if(!empty($getUserByPhone)){
-            return $this->sendError(__("messages.user.phone_already_exists", ["phone" => $mobile]));
+            //return $this->sendError(__("messages.user.phone_already_exists", ["phone" => $mobile]));
         }
 
         $otp = substr(rand(100999,1000099990), 0, 5);
         $newDateTime = Carbon::now()->addMinutes(4);
+
+        /*try{
+            $smsResponse = $this->sendCode($mobile, $email, $otp, "SMS");
+			return $this->sendResponse($smsResponse, __("messages.user.registered"));
+        }catch(Exception $e){
+
+            return $this->sendError($e, __("messages.error"));
+        }*/
+
         $user = PlusUser::create([
             'full_name' => $fullname,
             'email'     => $email,
@@ -70,6 +84,9 @@ class PlusUserController extends BaseController
             'taxon_status' => !empty($taxon_status) ? $taxon_status : ""
         ]);
 
+        $smsResponse = $this->sendCode($mobile, $email, $otp, "SMS");
+
+        $user->smsResponse = $smsResponse;
         //User created, return success response
         return $this->sendResponse($user, __("messages.user.registered"));
 
@@ -137,13 +154,24 @@ class PlusUserController extends BaseController
 
         if($res){
 
-            $details = [
-                'title' => '+Plus Login/Verify OTP',
-                'body' => 'Please use '.$otp.' to login/Verfy your Identity',
-                'otp' => $otp
-            ];
-           
-            \Mail::to($email)->send(new \App\Mail\OtpEmail($details));
+            try{
+                /*$details = [
+                    'title' => '+Plus Login/Verify OTP',
+                    'body' => 'Please use '.$otp.' to login/Verfy your Identity',
+                    'otp' => $otp
+                ];
+            
+                \Mail::to($email)->send(new \App\Mail\OtpEmail($details));*/
+
+            }catch(Exception $e){
+
+            }
+
+            $mobile = $isEmailExists->mobile;
+
+            $smsResponse = $this->sendCode($mobile, $email, $otp, "EMAIL");
+            //dd($smsResponse);
+            // /$user->smsResponse = $smsResponse;
 
             return $this->sendResponse($res, __("messages.user.otp_email_sent", ["email" => $email]));
         }else{
@@ -202,6 +230,8 @@ class PlusUserController extends BaseController
         $user = $this->PlusUserMod->getUserByOTP($otp);
         if($user){
             $user->update(["email_verified_at", Carbon::now()]);
+            $myTTL = 300; //minutes
+            JWTAuth::factory()->setTTL($myTTL);
             $token = JWTAuth::fromUser($user);
             return $this->sendResponse(compact('token', 'user'), __("messages.user.otp_verified"));
         }else{

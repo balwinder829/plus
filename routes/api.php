@@ -18,6 +18,16 @@ use App\Http\Controllers\ProductController;
 |
 */
 
+Route::get('/clear', function() {
+
+    Artisan::call('jwt:generate');
+    /*Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('optimize');*/
+ 
+    return "Cleared!";
+ 
+ });
 
 Route::post('login', [PlusUserController::class, 'authenticate']);
 Route::post('register', [PlusUserController::class, 'register']);
