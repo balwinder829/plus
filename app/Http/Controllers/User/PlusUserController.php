@@ -74,6 +74,8 @@ error_reporting(E_ALL);
 
         $user = PlusUser::create([
             'full_name' => $fullname,
+            'first_name' => $fname,
+            'last_name' => $lname,
             'email'     => $email,
             'mobile'    => $mobile,
             'smscode'   => $otp,
@@ -264,6 +266,40 @@ error_reporting(E_ALL);
 
         }else{
             return $this->sendError(__("messages.user.not_set_rooms"));
+        }
+
+    }
+	
+	public function updateUserProfile(Request $request){
+
+        //valid credential
+        $user = $this->getCurrentUser();
+        $validator = Validator::make($request->only('first_name', 'last_name', 'email', 'mobile', 'rooms'), [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'unique:plus_users,email,'.$user->id,
+            'mobile' => 'required',
+            'rooms' => 'required',
+        ]);
+
+
+        //Send failed response if request is not valid
+        if ($validator->fails()) {
+            return $this->sendError($validator->messages());
+        }
+
+        extract($request->all());
+        
+
+        if(!empty($user->id)){
+
+            $data = array('first_name' => $first_name, 'last_name' => $last_name, 'full_name' => $first_name." ".$last_name, 'email' => $email, 'rooms' => $rooms, 'mobile' => $mobile);
+            $updated = $this->PlusUserMod->updateUser($user->id, $data);
+
+            return $this->sendResponse($updated, __("messages.user.user_updated"));
+
+        }else{
+            return $this->sendError(__("messages.something_wrong"));
         }
 
     }

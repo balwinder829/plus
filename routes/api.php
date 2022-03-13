@@ -37,6 +37,7 @@ Route::post('send_otp', [PlusUserController::class, 'emailOtp']);
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('logout', [PlusUserController::class, 'logout']);
     Route::post('get_user', [PlusUserController::class, 'get_user']);
+    Route::post('update_user_profile', [PlusUserController::class, 'updateUserProfile']);
     Route::post('update_rooms', [PlusUserController::class, 'updateRooms']);
     Route::post('add_invoice', [InvoiceController::class, 'AddInvoice']);
     Route::post('get_my_invoices', [InvoiceController::class, 'getMyInvoices']);

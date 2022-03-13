@@ -16,6 +16,8 @@ class CreatePlusUsersTable extends Migration
         Schema::create('plus_users', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');
+            $table->string('first_name');
+            $table->string('last_name');
             $table->string('email')->unique();
             $table->bigInteger('mobile');
             $table->integer('rooms')->nullable();
