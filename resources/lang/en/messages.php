@@ -25,7 +25,9 @@ return [
             'otp_email_sent' => 'OTP successfully sent on :email email',
             'set_rooms' => 'Set rooms :rooms successfully',
             'not_set_rooms' => 'Rooms not successfully set please try again',
-            'user_updated' => 'Profile has been updated'
+            'user_updated' => 'Profile has been updated',
+            'user_jobdata_updated' => 'Job data updated successfully',
+            'user_jobdata_saved' => 'Job data saved successfully',
         ], 
         'invoice' => [
             "invoice_inserted" => "Invoice inserted successfully"

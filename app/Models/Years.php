@@ -9,4 +9,11 @@ class Years extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    protected $table = "years";
+
+    function years(){
+        return Years::where("status", 1)->get();
+    }
+    
 }

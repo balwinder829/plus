@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\User\PlusUserController;
+use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\ProductController;
 
@@ -33,12 +34,14 @@ Route::post('login', [PlusUserController::class, 'authenticate']);
 Route::post('register', [PlusUserController::class, 'register']);
 Route::post('verify_otp', [PlusUserController::class, 'verifyOtp']);
 Route::post('send_otp', [PlusUserController::class, 'emailOtp']);
+Route::post('get_configs', [SettingsController::class, 'getConfigs']);
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('logout', [PlusUserController::class, 'logout']);
     Route::post('get_user', [PlusUserController::class, 'get_user']);
     Route::post('update_user_profile', [PlusUserController::class, 'updateUserProfile']);
     Route::post('update_rooms', [PlusUserController::class, 'updateRooms']);
+    Route::post('insert_update_job_info', [PlusUserController::class, 'insertUpdateJobInfo']);
     Route::post('add_invoice', [InvoiceController::class, 'AddInvoice']);
     Route::post('get_my_invoices', [InvoiceController::class, 'getMyInvoices']);
 });

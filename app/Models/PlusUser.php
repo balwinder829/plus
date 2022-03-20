@@ -16,6 +16,7 @@ class PlusUser extends Authenticatable implements JWTSubject
 
     protected $table = "plus_users";
 
+    protected $with = "JobInfo";
     /**
      * The attributes that are mass assignable.
      *
@@ -51,9 +52,9 @@ class PlusUser extends Authenticatable implements JWTSubject
     {
         return [];
     }
-    public function products()
+    public function JobInfo()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasOne("App\Models\Jobs", "user_id", "id");
     }
 
     public function getUserByOTP($otp){

@@ -17,10 +17,11 @@ class PlusUserController extends BaseController
 {
     use UsersTrait;
 
-    protected $PlusUserMod;
+    protected $PlusUserMod, $JobsMod;
 
     public function __construct(){
         $this->PlusUserMod = new \App\Models\PlusUser();   
+        $this->JobsMod = new \App\Models\Jobs();   
     }
 
     public function register(Request $request)
@@ -274,12 +275,16 @@ error_reporting(E_ALL);
 
         //valid credential
         $user = $this->getCurrentUser();
-        $validator = Validator::make($request->only('first_name', 'last_name', 'email', 'mobile', 'rooms'), [
+        $validator = Validator::make($request->only('first_name', 'last_name', 'email', 'mobile', 'rooms', "company", "start_date", "end_date", "job_percentage"), [
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'unique:plus_users,email,'.$user->id,
             'mobile' => 'required',
             'rooms' => 'required',
+            'company' => 'required',
+            'job_percentage' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
         ]);
 
 
@@ -296,7 +301,63 @@ error_reporting(E_ALL);
             $data = array('first_name' => $first_name, 'last_name' => $last_name, 'full_name' => $first_name." ".$last_name, 'email' => $email, 'rooms' => $rooms, 'mobile' => $mobile);
             $updated = $this->PlusUserMod->updateUser($user->id, $data);
 
+            $jobData = array("company" => $company, "start_date" => $start_date, "end_date" => $end_date, "job_percentage" => $job_percentage);
+            if(!empty($job_id) && $job_id > 0){
+                $resp = $this->JobsMod->updateUserJobInfo($jobData, $job_id);                
+            } else{
+                $resp = $this->JobsMod->insertUserJobInfo($jobData);
+            }
             return $this->sendResponse($updated, __("messages.user.user_updated"));
+
+        }else{
+            return $this->sendError(__("messages.something_wrong"));
+        }
+
+    }
+
+	public function insertUpdateJobInfo(Request $request){
+
+        //valid credential
+        $user = $this->getCurrentUser();
+        $validator = Validator::make($request->only('company', 'job_percentage', 'startDate', 'endDate'), [
+            'company' => 'required',
+            'job_percentage' => 'required',
+            'startDate' => 'required',
+            'endDate' => 'required'
+        ]);
+
+
+        //Send failed response if request is not valid
+        if ($validator->fails()) {
+            return $this->sendError($validator->messages());
+        }
+
+        extract($request->all());
+        
+
+        if(!empty($user->id)){
+
+            $start = !empty($startDate) ? Carbon::parse($startDate) : ""; 
+            $end = !empty($endDate) ? Carbon::parse($endDate) : ""; 
+            $data = array('user_id' => $user->id, 'company' => $company, 'job_percentage' => $job_percentage, 'start_date' => $start, 'end_date' => $end );
+           
+            if(!empty($job_id) && $job_id > 0){
+
+                $resp = $this->JobsMod->updateUserJobInfo($data, $job_id);
+                if($resp){
+                    return $this->sendResponse($resp, __("messages.user.user_jobdata_updated"));
+                }
+
+            } else{
+
+                $resp = $this->JobsMod->insertUserJobInfo($data);
+                if($resp){
+                    return $this->sendResponse( $resp , __("messages.user.user_jobdata_saved"));
+                }
+
+            }
+            return $this->sendError(__("messages.something_wrong"));
+            
 
         }else{
             return $this->sendError(__("messages.something_wrong"));
